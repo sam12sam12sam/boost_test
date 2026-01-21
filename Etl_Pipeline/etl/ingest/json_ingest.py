@@ -6,4 +6,6 @@ def ingest_json(path):
     logger.info("Ingesting JSON")
     with open(path) as f:
         records = [json.loads(line) for line in f]
-    return records
+    raw_df = pd.DataFrame({'raw_payload': records})
+    raw_df['raw_payload'] = raw_df['raw_payload'].apply(json.dumps)
+    return raw_df
