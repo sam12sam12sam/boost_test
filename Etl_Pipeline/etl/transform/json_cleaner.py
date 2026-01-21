@@ -21,10 +21,17 @@ def clean_json(records):
     users, phones, jobs = [], [], []
 
     for r in records:
-        
+        if isinstance(r, str):
+            try:
+                r = json.loads(r)
+            except (json.JSONDecodeError, TypeError):
+                continue # Skip invalid records
+
         uid = r.get("user_id", "")
-        
         details = r.get("user_details", {})
+        
+        if not isinstance(details, dict):
+            details = {}
 
         users.append({
             "user_id": uid,
@@ -43,14 +50,16 @@ def clean_json(records):
             })
 
         for j in r.get("jobs_history", []):
-            jobs.append({
-                "job_id": j.get("id", ""),
-                "user_id": uid,
-                "occupation": j.get("occupation", ""),
-                "is_fulltime": j.get("is_fulltime", ""),
-                "start": j.get("start", ""),
-                "end": j.get("end", ""),
-                "logged_at": pd.to_datetime(r.get("logged_at", 0), unit="s") if r.get("logged_at") else ""
-            })
+            # Ensure nested job 'j' is also a dictionary
+            if isinstance(j, dict):
+                jobs.append({
+                    "job_id": j.get("id", ""),
+                    "user_id": uid,
+                    "occupation": j.get("occupation", ""),
+                    "is_fulltime": j.get("is_fulltime", ""),
+                    "start": j.get("start", ""),
+                    "end": j.get("end", ""),
+                    "logged_at": pd.to_datetime(r.get("logged_at", 0), unit="s") if r.get("logged_at") else ""
+                })
 
     return pd.DataFrame(users), pd.DataFrame(phones), pd.DataFrame(jobs)
