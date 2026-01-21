@@ -1,5 +1,6 @@
 import pandas as pd
 
+
 def mask_email(email):
     if not email:
         return None
@@ -20,33 +21,36 @@ def clean_json(records):
     users, phones, jobs = [], [], []
 
     for r in records:
-        uid = r["user_id"]
+        
+        uid = r.get("user_id", "")
+        
+        details = r.get("user_details", {})
 
         users.append({
             "user_id": uid,
-            "name": r["user_details"]["name"],
-            "username": mask_email(r["user_details"]["username"]),
-            "dob": r["user_details"]["dob"],
-            "address": r["user_details"]["address"],
-            "created_at": parse_epoch(r["created_at"]),
-            "updated_at": parse_epoch(r["updated_at"])
+            "name": details.get("name", ""),
+            "username": mask_email(details.get("username", "")),
+            "dob": details.get("dob", ""),
+            "address": details.get("address", ""),
+            "created_at": parse_epoch(r.get("created_at", "")),
+            "updated_at": parse_epoch(r.get("updated_at", ""))
         })
 
-        for p in r["user_details"]["telephone_numbers"]:
+        for p in details.get("telephone_numbers", []):
             phones.append({
                 "user_id": uid,
                 "phone": mask_phone(p)
             })
 
-        for j in r["jobs_history"]:
+        for j in r.get("jobs_history", []):
             jobs.append({
-                "job_id": j["id"],
+                "job_id": j.get("id", ""),
                 "user_id": uid,
-                "occupation": j["occupation"],
-                "is_fulltime": j["is_fulltime"],
-                "start": j["start"],
-                "end": j["end"],
-                "logged_at": pd.to_datetime(r["logged_at"], unit="s")
+                "occupation": j.get("occupation", ""),
+                "is_fulltime": j.get("is_fulltime", ""),
+                "start": j.get("start", ""),
+                "end": j.get("end", ""),
+                "logged_at": pd.to_datetime(r.get("logged_at", 0), unit="s") if r.get("logged_at") else ""
             })
 
     return pd.DataFrame(users), pd.DataFrame(phones), pd.DataFrame(jobs)
