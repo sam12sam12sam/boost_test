@@ -20,7 +20,7 @@ def parse_epoch(val):
 def clean_json(records):
     users, phones, jobs = [], [], []
 
-    for r in records:
+    for r in records['raw_payload']:
         if isinstance(r, str):
             try:
                 r = json.loads(r)
