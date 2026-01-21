@@ -63,7 +63,7 @@ CREATE TABLE jobs_history (
     job_id CHAR(36) PRIMARY KEY,
     user_id CHAR(36),
     occupation VARCHAR(255),
-    is_fulltime BOOLEAN,
+    is_fulltime VARCHAR(255),
     start VARCHAR(255),
     end VARCHAR(255),
     logged_at VARCHAR(255),
