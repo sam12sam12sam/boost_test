@@ -1,5 +1,6 @@
 import pandas as pd
 import json
+from etl.logger import logger
 
 def mask_email(email):
     if not email:
@@ -18,6 +19,7 @@ def parse_epoch(val):
         return None
 
 def clean_json(records):
+    logger.info("Cleaning Json")
     users, phones, jobs = [], [], []
 
     for r in records['raw_payload']:
