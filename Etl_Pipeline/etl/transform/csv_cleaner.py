@@ -1,6 +1,8 @@
 import pandas as pd
+from etl.logger import logger
 
 def clean_csv(df):
+    logger.info("Cleaning CSV")
     df["created_at"] = pd.to_datetime(df["created_at"], errors="coerce")
     df["last_login"] = pd.to_datetime(df["last_login"], unit="s", errors="coerce")
     df["is_claimed"] = df["is_claimed"].astype(str).str.lower().isin(["true", "1"])
